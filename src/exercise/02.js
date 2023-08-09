@@ -51,26 +51,25 @@ function useAsync(asyncCallback, initialState, dependencies) {
         dispatch({ type: 'rejected', error });
       },
     );
-
-    // eslint-disable-next-line
-  }, dependencies);
+  }, [asyncCallback]);
 
   return state;
 }
 
 function PokemonInfo({ pokemonName }) {
-  const state = useAsync(
-    () => {
+  const asyncCallback = React.useCallback(
+    function () {
       if (!pokemonName) {
         return;
       }
       return fetchPokemon(pokemonName);
     },
-    {
-      status: pokemonName ? 'pending' : 'idle',
-    },
     [pokemonName],
   );
+
+  const state = useAsync(asyncCallback, {
+    status: pokemonName ? 'pending' : 'idle',
+  });
 
   const { data, status, error } = state;
 
